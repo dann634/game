@@ -10,7 +10,7 @@ class Main : Application() {
     override fun start(stage: Stage) {
         stage.apply {
             title = "Game"
-            isResizable = false
+//            isResizable = false
             scene = GameController().getScene()
             show()
         }
