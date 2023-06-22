@@ -1,13 +1,11 @@
 package com.jackson.ui
 
-import javafx.animation.AnimationTimer
-import javafx.animation.KeyFrame
-import javafx.animation.KeyValue
-import javafx.animation.Timeline
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.value.ChangeListener
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
-import javafx.util.Duration
+import javafx.scene.layout.VBox
 
 class GameController {
 
@@ -20,16 +18,19 @@ class GameController {
 
     private val inventory = Inventory()
 
+    private val blockList = mutableListOf<Block>()
+
     private val maxBlockWidth = 32
     private val maxBlockHeight = 8
 
-    private val FPS = 60.0
+    private val fps = 60.0
 
 
     private val playerModel =
         PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble())
 
-    private var playerAnimation : Timeline
+    private val animationThread = Thread(AnimationRunnable(playerModel, fps, this))
+
 
 
 
@@ -40,11 +41,6 @@ class GameController {
             style = "-fx-background-color: lightblue" //Background colour
             children.add(inventory.getHotbar()) //Hotbar
         }
-
-        this.playerAnimation = Timeline(KeyFrame(Duration.millis(10.0), KeyValue(playerModel.xProperty(), playerModel.xProperty().get() + playerModel.speed)))
-        this.playerAnimation.cycleCount = Timeline.INDEFINITE
-        this.playerAnimation.play()
-
 
         //https://gist.github.com/Da9el00/421d6f02d52093ac07a9e65b99241bf8
 
@@ -57,6 +53,12 @@ class GameController {
 
         val scene = Scene(root)
         initKeyPressedListeners(scene)
+
+        animationThread.apply {
+            isDaemon = true
+            start()
+        }
+
 
 
         return scene
@@ -73,10 +75,13 @@ class GameController {
                 } else {
                     "dirt"
                 }
-                this.root.children.add(Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this))
+                var block = Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this)
+                this.blockList.add(block)
+                this.root.children.add(block)
             }
         }
-        this.root.children.add(this.playerModel)
+        this.root.children.addAll(this.playerModel, this.playerModel.feetCollision)
+
     }
 
     fun setBlockOnTop(block: Block) { //For border indicator
@@ -88,30 +93,50 @@ class GameController {
 
         fun moveSpriteLeft() {
             playerModel.isModelFacingRight.value = false
-            playerModel.speed = -1.0
-            playerAnimation.play()
-        }
+            playerModel.xAcceleration = -0.75
+    }
 
         fun moveSpriteRight() {
             playerModel.isModelFacingRight.value = true
-            playerModel.speed = 1.0
-            playerAnimation.play()
+            playerModel.xAcceleration = 0.75
+        }
+
+        fun jump() {
+
+            if(playerModel.isJumping) {
+                return
+            }
+
+            playerModel.yAcceleration = -2.0
+            playerModel.isJumping = true
         }
 
         scene.setOnKeyPressed {
             when (it.code) {
                 KeyCode.A -> moveSpriteLeft()
                 KeyCode.D -> moveSpriteRight()
+                KeyCode.W -> jump()
                 else -> {}
             }
         }
 
         scene.setOnKeyReleased {//Stops sprite if any other button is pressed
-            playerModel.speed = 0.0
+            playerModel.xAcceleration = 0.0
         }
 
 
 
+    }
+
+    fun isSpriteTouchingGround() : Boolean {
+        for (block in blockList) {
+            if(playerModel.feetCollision.intersects(block.boundsInParent)) {
+                playerModel.isJumping = false
+                println("ground touched")
+                return true
+            }
+        }
+        return false
     }
 
 
