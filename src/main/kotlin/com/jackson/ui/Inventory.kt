@@ -21,7 +21,8 @@ class Inventory {
                 style = "-fx-background-color: grey;" +
                         "-fx-background-size: 40 40;" +
                         "-fx-border-radius: 10 10 10 10;" +
-                        "-fx-background-radius: 10 10 10 10;"
+                        "-fx-background-radius: 10 10 10 10;" +
+                        "-fx-opacity: 0.5;"
                 minHeight = 40.0
                 minWidth = 40.0
 

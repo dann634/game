@@ -8,7 +8,13 @@ import javafx.scene.image.ImageView
 
 class PlayerModel (startingX : Double, startingY : Double, gameController : GameController) : ImageView() {
 
-    val isModelFacingRight = SimpleBooleanProperty()
+    val isModelFacingRight = SimpleBooleanProperty(true)
+
+    val aProperty = SimpleBooleanProperty()
+    val dProperty = SimpleBooleanProperty()
+
+    val speed = 10.0
+
 
     init {
         image = Image("file:src/main/resources/images/player.png")
