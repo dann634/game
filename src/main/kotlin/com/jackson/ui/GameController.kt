@@ -1,8 +1,9 @@
 package com.jackson.ui
 
-import javafx.animation.TranslateTransition
-import javafx.beans.binding.BooleanBinding
-import javafx.beans.value.ChangeListener
+import javafx.animation.AnimationTimer
+import javafx.animation.KeyFrame
+import javafx.animation.KeyValue
+import javafx.animation.Timeline
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
@@ -26,10 +27,11 @@ class GameController {
 
 
     private val playerModel =
-        PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble(), this)
+        PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble())
 
-    val spriteAnimation  = TranslateTransition()
-    val xMove = playerModel.aProperty.or(playerModel.dProperty)
+    private var playerAnimation : Timeline
+
+
 
 
     init {
@@ -39,23 +41,10 @@ class GameController {
             children.add(inventory.getHotbar()) //Hotbar
         }
 
-        this.spriteAnimation.apply {
-            duration = Duration.millis(1000/FPS)
-            node = playerModel
-        }
+        this.playerAnimation = Timeline(KeyFrame(Duration.millis(10.0), KeyValue(playerModel.xProperty(), playerModel.xProperty().get() + playerModel.speed)))
+        this.playerAnimation.cycleCount = Timeline.INDEFINITE
+        this.playerAnimation.play()
 
-        xMove.addListener { observableValue, t, t2 ->
-
-            if(playerModel.dProperty.get()) {
-                playerModel.x += playerModel.speed
-                playerModel.dProperty.set(false)
-            }
-
-            if(playerModel.aProperty.get()) {
-                playerModel.x -= playerModel.speed
-                playerModel.aProperty.set(false)
-            }
-        }
 
         //https://gist.github.com/Da9el00/421d6f02d52093ac07a9e65b99241bf8
 
@@ -65,8 +54,6 @@ class GameController {
     fun getScene(): Scene {
 
         drawScreen()
-
-
 
         val scene = Scene(root)
         initKeyPressedListeners(scene)
@@ -101,12 +88,14 @@ class GameController {
 
         fun moveSpriteLeft() {
             playerModel.isModelFacingRight.value = false
-            playerModel.aProperty.set(true)
+            playerModel.speed = -1.0
+            playerAnimation.play()
         }
 
         fun moveSpriteRight() {
             playerModel.isModelFacingRight.value = true
-            playerModel.dProperty.set(true)
+            playerModel.speed = 1.0
+            playerAnimation.play()
         }
 
         scene.setOnKeyPressed {
@@ -115,7 +104,10 @@ class GameController {
                 KeyCode.D -> moveSpriteRight()
                 else -> {}
             }
+        }
 
+        scene.setOnKeyReleased {//Stops sprite if any other button is pressed
+            playerModel.speed = 0.0
         }
 
 

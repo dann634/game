@@ -6,14 +6,12 @@ import javafx.geometry.NodeOrientation
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 
-class PlayerModel (startingX : Double, startingY : Double, gameController : GameController) : ImageView() {
+class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
 
     val isModelFacingRight = SimpleBooleanProperty(true)
 
-    val aProperty = SimpleBooleanProperty()
-    val dProperty = SimpleBooleanProperty()
 
-    val speed = 10.0
+    var speed = 0.0
 
 
     init {
