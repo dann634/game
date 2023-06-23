@@ -20,8 +20,15 @@ class GameController {
 
     private val blockList = mutableListOf<Block>()
 
+    var isAPressed = false
+    var isDPressed = false
+
+
+
     private val maxBlockWidth = 32
     private val maxBlockHeight = 8
+    private val blocks = ArrayList<ArrayList<Block>>()
+
 
     private val fps = 60.0
 
@@ -78,6 +85,7 @@ class GameController {
                 var block = Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this)
                 this.blockList.add(block)
                 this.root.children.add(block)
+//                this.blocks[i][j] = block
             }
         }
         this.root.children.addAll(this.playerModel, this.playerModel.feetCollision)
@@ -94,11 +102,13 @@ class GameController {
         fun moveSpriteLeft() {
             playerModel.isModelFacingRight.value = false
             playerModel.xAcceleration = -0.75
+            isAPressed = true
     }
 
         fun moveSpriteRight() {
             playerModel.isModelFacingRight.value = true
             playerModel.xAcceleration = 0.75
+            isDPressed = true
         }
 
         fun jump() {
@@ -107,7 +117,7 @@ class GameController {
                 return
             }
 
-            playerModel.yAcceleration = -2.0
+            playerModel.yAcceleration = -3.0
             playerModel.isJumping = true
         }
 
@@ -120,19 +130,18 @@ class GameController {
             }
         }
 
-        scene.setOnKeyReleased {//Stops sprite if any other button is pressed
-            playerModel.xAcceleration = 0.0
+        scene.setOnKeyReleased { //Stops sprite if any other button is pressed
+//            playerModel.xAcceleration = 0.0
         }
 
 
 
     }
 
-    fun isSpriteTouchingGround() : Boolean {
+    fun isSpriteTouchingGround() : Boolean { // FIXME: intersects doesnt work
         for (block in blockList) {
             if(playerModel.feetCollision.intersects(block.boundsInParent)) {
                 playerModel.isJumping = false
-                println("ground touched")
                 return true
             }
         }

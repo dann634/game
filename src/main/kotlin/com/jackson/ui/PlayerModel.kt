@@ -36,6 +36,7 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
             height = 5.0
             isVisible = false
         }
+
         feetCollision.widthProperty().bind(fitWidthProperty())
         feetCollision.xProperty().bind(xProperty())
         feetCollision.yProperty().bind(yProperty().add(43))

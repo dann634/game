@@ -6,6 +6,10 @@ import javafx.scene.layout.VBox
 
 class Inventory {
     //Have hotbar with expandable inventory
+    /*
+    Add icon for selected hotbar slot
+    add keybindings for 1-5
+     */
 
     fun getHotbar() : GridPane {
         val hotbar = GridPane()
@@ -34,6 +38,8 @@ class Inventory {
 
             hotbar.add(vbox, i, 0)
         }
+
+
 
         return hotbar
     }

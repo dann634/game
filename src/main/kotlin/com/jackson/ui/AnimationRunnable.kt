@@ -7,7 +7,7 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
 
     private var prevTime : Long = 0
     private var brakingForce = 0.2
-    private val gravity = 0.1
+    private val gravity = 0.2
 
     private fun calcXProperties() {
         this.playerModel.apply {
@@ -24,21 +24,27 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
 
 
 
-            if(xAcceleration == 0.0 && xVelocity != 0.0) {
+//            if(!gameController.isAPressed && !gameController.isDPressed && xVelocity != 0.0) {
+//
+//            }
+
+            if(!(gameController.isAPressed && gameController.isDPressed) && xAcceleration == 0.0) {
                 xAcceleration = xVelocity.sign * -brakingForce //Stopping acceleration
             }
-//
+
+
             if(abs(xVelocity) < 0.00001) { //Complete stop (turning is slow)
                 xVelocity = 0.0
                 xAcceleration = 0.0
-//                println("too slow")
+
             }
         }
     }
 
     private fun calcYProperties() {
+
         //gravity and jumping
-        if(!playerModel.isJumping && gameController.isSpriteTouchingGround()) {
+        if(playerModel.yAcceleration >= 0 && gameController.isSpriteTouchingGround()) {
             playerModel.apply {
                 yAcceleration = 0.0
                 yVelocity = 0.0
@@ -65,7 +71,7 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
         }
     }
 
-    override fun run() {
+    override fun run() { //Blocking main thread??
         while(true) {
 
             if(System.currentTimeMillis() - prevTime < 1000/fps) { //FPS lock
