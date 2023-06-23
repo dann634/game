@@ -17,27 +17,12 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
             if(abs(xVelocity) > abs(maxXVelocity)) { //Speed Cap
                 xVelocity = maxXVelocity * xVelocity.sign
             }
-//
-//                 if(xAcceleration.sign != xVelocity.sign) { //Braking instantly
-//                     xVelocity = 0.0
-//                 }
 
-
-
-//            if(!gameController.isAPressed && !gameController.isDPressed && xVelocity != 0.0) {
-//
-//            }
-
-            if(!(gameController.isAPressed && gameController.isDPressed) && xAcceleration == 0.0) {
-                xAcceleration = xVelocity.sign * -brakingForce //Stopping acceleration
-            }
-
-
-            if(abs(xVelocity) < 0.00001) { //Complete stop (turning is slow)
-                xVelocity = 0.0
+            if(!gameController.isAPressed && !gameController.isDPressed) { //slowing down
+                xVelocity *= brakingForce
                 xAcceleration = 0.0
-
             }
+
         }
     }
 

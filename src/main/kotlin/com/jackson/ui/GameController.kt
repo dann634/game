@@ -85,7 +85,6 @@ class GameController {
                 var block = Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this)
                 this.blockList.add(block)
                 this.root.children.add(block)
-//                this.blocks[i][j] = block
             }
         }
         this.root.children.addAll(this.playerModel, this.playerModel.feetCollision)
@@ -121,17 +120,22 @@ class GameController {
             playerModel.isJumping = true
         }
 
-        scene.setOnKeyPressed {
+        scene.setOnKeyPressed {//look how to listen for multiple key presses
             when (it.code) {
                 KeyCode.A -> moveSpriteLeft()
                 KeyCode.D -> moveSpriteRight()
-                KeyCode.W -> jump()
+                KeyCode.SPACE -> jump()
                 else -> {}
             }
         }
 
-        scene.setOnKeyReleased { //Stops sprite if any other button is pressed
-//            playerModel.xAcceleration = 0.0
+        scene.setOnKeyReleased {
+        //Stops sprite if any other button is pressed
+            when(it.code) {
+                KeyCode.A -> isAPressed = false
+                KeyCode.D -> isDPressed = false
+                else -> {}
+            }
         }
 
 

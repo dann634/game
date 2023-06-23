@@ -14,7 +14,7 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
 
     var xVelocity = 0.0
     var xAcceleration = 0.0
-    val maxXVelocity = 3.0
+    val maxXVelocity = 5.0
 
     var yVelocity = 0.0
     var yAcceleration = 0.0
