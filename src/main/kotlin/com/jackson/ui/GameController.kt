@@ -1,11 +1,8 @@
 package com.jackson.ui
 
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.value.ChangeListener
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
-import javafx.scene.layout.VBox
 
 class GameController {
 
@@ -32,9 +29,7 @@ class GameController {
 
     private val fps = 60.0
 
-
-    private val playerModel =
-        PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble())
+    private val playerModel = PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble())
 
     private val animationThread = Thread(AnimationRunnable(playerModel, fps, this))
 
@@ -82,7 +77,7 @@ class GameController {
                 } else {
                     "dirt"
                 }
-                var block = Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this)
+                var block = Block(blockType, (i * 32).toDouble(), (j * 32 + 300).toDouble(), this, playerModel)
                 this.blockList.add(block)
                 this.root.children.add(block)
             }
@@ -125,6 +120,7 @@ class GameController {
                 KeyCode.A -> moveSpriteLeft()
                 KeyCode.D -> moveSpriteRight()
                 KeyCode.SPACE -> jump()
+                KeyCode.W -> jump()
                 else -> {}
             }
         }
@@ -142,7 +138,7 @@ class GameController {
 
     }
 
-    fun isSpriteTouchingGround() : Boolean { // FIXME: intersects doesnt work
+    fun isSpriteTouchingGround() : Boolean {
         for (block in blockList) {
             if(playerModel.feetCollision.intersects(block.boundsInParent)) {
                 playerModel.isJumping = false

@@ -18,14 +18,24 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
 
     var yVelocity = 0.0
     var yAcceleration = 0.0
-    val maxYVelocity = 2.0
+    val maxYVelocity = 3.0
     var isJumping = false
 
     val feetCollision = Rectangle()
 
+    private val centreX = 0.0
+    private val centreY = 0.0
+
+    var idleImage = Image("file:src/main/resources/images/playerIdle.png")
+    var run1Image = Image("file:src/main/resources/images/playerRun1.png")
+    var run2Image = Image("file:src/main/resources/images/playerRun2.png")
+
+
+    val range = 500
+
 
     init {
-        image = Image("file:src/main/resources/images/player.png")
+        image = run1Image
         fitHeight = 48.0
         fitWidth = 32.0
         isPreserveRatio = true
@@ -45,9 +55,32 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
             nodeOrientation = if(t2) NodeOrientation.LEFT_TO_RIGHT
             else NodeOrientation.RIGHT_TO_LEFT
 
-
         }
 
     }
+
+
+
+    fun setRun1Image() {
+        image = run1Image
+    }
+
+    fun setRun2Image() {
+        image = run2Image
+    }
+
+    fun setIdleImage() {
+        image = idleImage
+    }
+
+    fun getCentreX() : Double {
+        return centreX + (fitWidth / 2)
+    }
+
+    fun getCentreY() : Double {
+        return centreY + (fitHeight / 2)
+    }
+
+
 
 }

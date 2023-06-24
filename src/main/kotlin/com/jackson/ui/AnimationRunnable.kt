@@ -1,5 +1,7 @@
 package com.jackson.ui
 
+import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -8,6 +10,9 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
     private var prevTime : Long = 0
     private var brakingForce = 0.2
     private val gravity = 0.2
+
+    private var oldChangeX = playerModel.x
+    private val minXForModelChange = 30.0
 
     private fun calcXProperties() {
         this.playerModel.apply {
@@ -22,6 +27,17 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
                 xVelocity *= brakingForce
                 xAcceleration = 0.0
             }
+
+            if(abs(oldChangeX - x) > minXForModelChange) {
+                when(playerModel.image) {
+                    playerModel.run1Image -> playerModel.setRun2Image()
+                    playerModel.run2Image -> playerModel.setRun1Image()
+                    else -> playerModel.setRun1Image()
+                }
+                oldChangeX = x
+            }
+
+
 
         }
     }
@@ -56,7 +72,21 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
         }
     }
 
-    override fun run() { //Blocking main thread??
+    private fun checkForIdle() {
+        var oldX = playerModel.x
+        val idleTimer = Timer(true)
+        idleTimer.scheduleAtFixedRate(timerTask {
+            if(playerModel.x == oldX) {
+                playerModel.setIdleImage()
+            }
+            oldX = playerModel.x
+        },0L, 50L)
+    }
+
+    override fun run() {
+
+        checkForIdle()
+
         while(true) {
 
             if(System.currentTimeMillis() - prevTime < 1000/fps) { //FPS lock
