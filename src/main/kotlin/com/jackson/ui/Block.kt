@@ -19,14 +19,14 @@ class Block (blockName : String, x : Double, y : Double, gameController : GameCo
 
         setOnMouseEntered {
 
-            val hypo = sqrt((abs(playerModel.getCentreX()) - abs(x)).pow(2.0) + (abs(playerModel.getCentreY()) - abs(y)).pow(2.0))
-            println(hypo)
-            if(hypo < playerModel.range) {
-                style = "-fx-border-color: black ;" +
-                        "-fx-border-width: 2; " +
-                        "-fx-border-style: solid ;"
-                gameController.setBlockOnTop(this) //So border shows
-            }
+
+            // FIXME: add in the range check 
+//            if(hypo < playerModel.range) {
+//                style = "-fx-border-color: black ;" +
+//                        "-fx-border-width: 2; " +
+//                        "-fx-border-style: solid ;"
+//                gameController.setBlockOnTop(this) //So border shows
+//            }
         }
 
 

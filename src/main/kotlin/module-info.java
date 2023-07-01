@@ -1,4 +1,4 @@
-module com.jackson.game {
+module com.jackson {
     requires javafx.controls;
     requires javafx.fxml;
     requires kotlin.stdlib;
