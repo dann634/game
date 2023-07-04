@@ -13,27 +13,30 @@ class Block (blockName : String, x : Double, y : Double, gameController : GameCo
     private val dimensions = 16 * scale
     private val imageView = ImageView()
 
+
     init {
         layoutX = x
         layoutY = y
 
         setOnMouseEntered {
-
-
-            // FIXME: add in the range check 
-//            if(hypo < playerModel.range) {
-//                style = "-fx-border-color: black ;" +
-//                        "-fx-border-width: 2; " +
-//                        "-fx-border-style: solid ;"
-//                gameController.setBlockOnTop(this) //So border shows
-//            }
+            if(playerModel.getDistanceFromBlock(this) < playerModel.range) {
+                style = "-fx-border-color: black ;" +
+                        "-fx-border-width: 2; " +
+                        "-fx-border-style: solid ;"
+                gameController.setBlockOnTop(this) //So border shows
+            }
         }
-
-
 
         setOnMouseExited {
             style = "-fx-border-width: 0"
         }
+
+        setOnMouseClicked { //Break block logic
+            if(playerModel.getDistanceFromBlock(this) < playerModel.range) {
+                gameController.breakBlock(this)
+            }
+        }
+
 
         height = dimensions
         width = dimensions

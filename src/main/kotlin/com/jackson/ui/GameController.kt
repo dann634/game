@@ -1,8 +1,14 @@
 package com.jackson.ui
 
+import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.VBox
+import javafx.scene.robot.Robot
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.timerTask
 
 class GameController {
 
@@ -11,7 +17,7 @@ class GameController {
     Draw etc
      */
 
-    private var root: AnchorPane = AnchorPane()
+    private var root : AnchorPane = AnchorPane()
 
     private val inventory = Inventory()
 
@@ -32,6 +38,7 @@ class GameController {
     private val playerModel = PlayerModel(((1024 / 2) - 16).toDouble(), (556 - (maxBlockHeight * 32) - 48).toDouble())
 
     private val animationThread = Thread(AnimationRunnable(playerModel, fps, this))
+
 
 
 
@@ -61,8 +68,6 @@ class GameController {
             start()
         }
 
-
-
         return scene
     }
 
@@ -82,7 +87,7 @@ class GameController {
                 this.root.children.add(block)
             }
         }
-        this.root.children.addAll(this.playerModel, this.playerModel.feetCollision)
+        this.root.children.addAll(playerModel.getAllNodeElements())
 
     }
 
@@ -91,7 +96,8 @@ class GameController {
         playerModel.toFront()
     }
 
-    private fun initKeyPressedListeners(scene: Scene) {
+
+    private fun initKeyPressedListeners(scene : Scene) {
 
         fun moveSpriteLeft() {
             playerModel.isModelFacingRight.value = false
@@ -146,6 +152,20 @@ class GameController {
             }
         }
         return false
+    }
+
+    fun isSpriteBangingHead() : Boolean {
+        for(block in blockList) {
+            if(playerModel.headCollision.intersects(block.boundsInParent)) {
+                return true
+            }
+        }
+        playerModel.isBanged = false
+        return false
+    }
+    fun breakBlock(block : Block) {
+        this.root.children.remove(block)
+        this.blockList.remove(block)
     }
 
 

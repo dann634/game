@@ -1,11 +1,13 @@
 package com.jackson.ui
 
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.value.ChangeListener
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.NodeOrientation
+import javafx.scene.Node
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.shape.Rectangle
+import kotlin.math.hypot
 
 class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
 
@@ -20,18 +22,22 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
     var yAcceleration = 0.0
     val maxYVelocity = 3.0
     var isJumping = false
+    var isBanged = false
 
     val feetCollision = Rectangle()
+    val headCollision = Rectangle()
+    val leftCollision = Rectangle()
+    val rightCollision = Rectangle()
 
-    private val centreX = 0.0
-    private val centreY = 0.0
+    private val centreX = SimpleDoubleProperty()
+    private val centreY = SimpleDoubleProperty()
 
-    var idleImage = Image("file:src/main/resources/images/playerIdle.png")
+    private var idleImage = Image("file:src/main/resources/images/playerIdle.png")
     var run1Image = Image("file:src/main/resources/images/playerRun1.png")
     var run2Image = Image("file:src/main/resources/images/playerRun2.png")
 
 
-    val range = 500
+    val range = 150 //pixels
 
 
     init {
@@ -41,15 +47,37 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
         isPreserveRatio = true
         y = startingY
         x = startingX
+        isMouseTransparent = true
 
-        feetCollision.apply {
-            height = 5.0
-            isVisible = false
+
+        centreX.bind(xProperty().add(fitWidth / 2))
+        centreY.bind(yProperty().add(fitWidth / 2))
+
+        //Feet Collision
+        this.feetCollision.apply {
+            height = 1.0
+//            isVisible = false
+            widthProperty().bind(this@PlayerModel.fitWidthProperty().subtract(10))
+            xProperty().bind(this@PlayerModel.xProperty().add(5))
+            yProperty().bind(this@PlayerModel.yProperty().add(48))
         }
 
-        feetCollision.widthProperty().bind(fitWidthProperty())
-        feetCollision.xProperty().bind(xProperty())
-        feetCollision.yProperty().bind(yProperty().add(43))
+        //Head Collision
+        this.headCollision.apply {
+            height = 1.0
+            isVisible = true
+            widthProperty().bind(this@PlayerModel.fitWidthProperty().subtract(10))
+            xProperty().bind(this@PlayerModel.xProperty().add(5))
+            yProperty().bind(this@PlayerModel.yProperty())
+
+        }
+
+
+
+
+
+
+
 
         this.isModelFacingRight.addListener { observableValue, t, t2 ->
             nodeOrientation = if(t2) NodeOrientation.LEFT_TO_RIGHT
@@ -59,7 +87,26 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
 
     }
 
+    fun getDistanceFromBlock(block : Block) : Double {
 
+        //X values
+        val blockCentreX = block.layoutX + (block.width / 2) //calc centre x coords of block
+        val xDist = if(blockCentreX < centreX.get()) { //check if block is left or right of player
+            centreX.get() - blockCentreX
+        } else {
+            blockCentreX - centreX.get()
+        }
+
+        //Y values
+        val blockCentreY = block.layoutY + (block.height / 2) //calc centre y coords of block
+        val yDist = if(blockCentreY < centreY.get()) { //check if block is above or below the player
+            centreY.get() - blockCentreY
+        } else {
+            blockCentreY - centreY.get()
+        }
+
+        return hypot(xDist, yDist) //return hypotenuse
+    }
 
     fun setRun1Image() {
         image = run1Image
@@ -73,13 +120,12 @@ class PlayerModel (startingX : Double, startingY : Double) : ImageView() {
         image = idleImage
     }
 
-    fun getCentreX() : Double {
-        return centreX + (fitWidth / 2)
+    fun getAllNodeElements() : List<Node> {
+        val list = mutableListOf<Node>()
+        list.add(this)
+        return list
     }
 
-    fun getCentreY() : Double {
-        return centreY + (fitHeight / 2)
-    }
 
 
 

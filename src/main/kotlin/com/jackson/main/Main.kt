@@ -13,6 +13,7 @@ class Main : Application() {
             isResizable = false
             scene = GameController().getScene()
             show()
+
         }
     }
 }

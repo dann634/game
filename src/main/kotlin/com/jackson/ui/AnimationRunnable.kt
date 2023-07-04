@@ -9,11 +9,13 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
 
     private var prevTime : Long = 0
     private var brakingForce = 0.2
-    private val gravity = 0.2
+    private val gravity = 0.3 // TODO: maybe increase
 
     private var oldChangeX = playerModel.x
     private val minXForModelChange = 30.0
 
+
+    //Player Movement Methods
     private fun calcXProperties() {
         this.playerModel.apply {
             xVelocity += xAcceleration
@@ -41,7 +43,6 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
 
         }
     }
-
     private fun calcYProperties() {
 
         //gravity and jumping
@@ -68,10 +69,17 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
                 yVelocity = maxYVelocity * yVelocity.sign
             }
 
+            if(!playerModel.isBanged && gameController.isSpriteBangingHead()) {
+                yVelocity  = 0.0
+                playerModel.isBanged = true
+                println("Head touching block")
+            }
+
             y += yVelocity
+
+
         }
     }
-
     private fun checkForIdle() {
         var oldX = playerModel.x
         val idleTimer = Timer(true)
@@ -82,6 +90,7 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
             oldX = playerModel.x
         },0L, 50L)
     }
+
 
     override fun run() {
 
@@ -96,6 +105,7 @@ class AnimationRunnable(private val playerModel: PlayerModel, private val fps : 
 
             calcXProperties()
             calcYProperties()
+
 
         }
     }
